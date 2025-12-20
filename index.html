@@ -1,165 +1,285 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>VOI Reports Portal</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<title>VOI Transparency Reports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+:root {
+  --bg-main: radial-gradient(circle at top, #3b1d6b, #0b0f14 55%);
+  --card-bg: rgba(17, 24, 39, 0.88);
+  --border-soft: rgba(255,255,255,0.08);
+  --accent: #8b5cf6;
+  --accent-soft: rgba(139,92,246,0.15);
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+  --green: #22c55e;
+  --yellow: #eab308;
+  --grey: #6b7280;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0b0f14;
-  color: #e5e7eb;
   margin: 0;
-  padding: 2rem;
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
-h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+/* NAVBAR */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(2,6,23,0.6);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-soft);
 }
 
-.year {
-  margin-top: 2rem;
+nav h1 {
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
-.month {
-  margin-left: 1rem;
-  margin-top: 1rem;
+nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-size: 0.9rem;
 }
 
-.period {
-  margin-left: 2rem;
-  padding: 0.5rem;
-  border-left: 3px solid #374151;
+nav a:hover {
+  color: var(--text-main);
+}
+
+/* HERO */
+header {
+  text-align: center;
+  padding: 4rem 1rem 3rem;
+}
+
+header h2 {
+  font-size: 2.4rem;
   margin-bottom: 0.5rem;
 }
 
-.status {
+header p {
+  color: var(--text-muted);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* MAIN */
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* CARD */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.card h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.card .meta {
   font-size: 0.8rem;
-  margin-left: 0.5rem;
+  color: var(--text-muted);
 }
 
-.complete { color: #22c55e; }
-.partial  { color: #eab308; }
-.empty    { color: #9ca3af; }
-
-.category {
-  margin-left: 1rem;
+/* STATUS */
+.status {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-button {
-  background: #1f2933;
-  border: 1px solid #374151;
-  color: #e5e7eb;
-  padding: 0.3rem 0.6rem;
-  margin-right: 0.5rem;
-  cursor: pointer;
-}
+.complete { color: var(--green); }
+.partial  { color: var(--yellow); }
+.empty    { color: var(--grey); }
 
-button:hover {
-  background: #374151;
-}
-
-pre {
-  background: #020617;
-  padding: 1rem;
-  overflow-x: auto;
-  white-space: pre-wrap;
+/* BUTTONS */
+.actions {
   margin-top: 1rem;
+}
+
+.actions button {
+  background: var(--accent-soft);
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  margin-right: 0.4rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.actions button:hover {
+  background: var(--accent);
+}
+
+.actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* VIEWER */
+#viewer {
+  margin-top: 3rem;
+  background: #020617;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 1.5rem;
+  white-space: pre-wrap;
+  display: none;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 </style>
 </head>
 
 <body>
 
-<h1>VOI Transparency & Activity Reports</h1>
+<nav>
+  <h1>VOI Reports</h1>
+  <div>
+    <a href="#">Home</a>
+    <a href="#">Transparency</a>
+    <a href="#">Network</a>
+    <a href="#">Grants</a>
+    <a href="https://github.com/fury-05/voiweeklyreports" target="_blank">GitHub</a>
+  </div>
+</nav>
 
-<div id="app">Loading reports…</div>
+<header>
+  <h2>Transparency & Activity Reports</h2>
+  <p>
+    Public, auditable reports published in fixed reporting cycles to ensure
+    accountability across the VOI network.
+  </p>
+</header>
 
-<pre id="viewer" hidden></pre>
+<main>
+  <div id="app">Loading reports…</div>
+  <pre id="viewer"></pre>
+</main>
+
+<footer>
+  © VOI Network • Reports are generated automatically and are append-only.
+</footer>
 
 <script>
 const DATA_URL = "data/reports.json";
 
-
-function groupReports(data) {
-  const map = {};
+function group(data) {
+  const out = {};
   data.forEach(r => {
-    map[r.year] ??= {};
-    map[r.year][r.month] ??= {};
-    map[r.year][r.month][r.period] ??= {};
-    map[r.year][r.month][r.period][r.category] = r;
+    out[r.year] ??= {};
+    out[r.year][r.month] ??= {};
+    out[r.year][r.month][r.period] ??= {};
+    out[r.year][r.month][r.period][r.category] = r;
   });
-  return map;
+  return out;
 }
 
-function periodStatus(periodObj) {
-  const keys = Object.keys(periodObj);
-  if (keys.length === 0) return "empty";
-  if (keys.length < 3) return "partial";
+function status(obj) {
+  const n = Object.keys(obj).length;
+  if (n === 0) return "empty";
+  if (n < 3) return "partial";
   return "complete";
-}
-
-function render(data) {
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-
-  if (!data.length) {
-    app.innerHTML = "<p>No reports published yet.</p>";
-    return;
-  }
-
-  const grouped = groupReports(data);
-
-  Object.keys(grouped).sort().forEach(year => {
-    const yDiv = document.createElement("div");
-    yDiv.className = "year";
-    yDiv.innerHTML = `<h2>${year}</h2>`;
-
-    Object.keys(grouped[year]).sort().forEach(month => {
-      const mDiv = document.createElement("div");
-      mDiv.className = "month";
-      mDiv.innerHTML = `<h3>${month}</h3>`;
-
-      Object.keys(grouped[year][month]).sort().forEach(period => {
-        const pObj = grouped[year][month][period];
-        const status = periodStatus(pObj);
-
-        const pDiv = document.createElement("div");
-        pDiv.className = "period";
-        pDiv.innerHTML = `
-          <strong>${period}</strong>
-          <span class="status ${status}">(${status})</span>
-        `;
-
-        Object.keys(pObj).forEach(cat => {
-          const btn = document.createElement("button");
-          btn.textContent = cat;
-          btn.onclick = () => {
-            const viewer = document.getElementById("viewer");
-            viewer.hidden = false;
-            viewer.textContent = pObj[cat].content;
-          };
-          pDiv.appendChild(btn);
-        });
-
-        mDiv.appendChild(pDiv);
-      });
-
-      yDiv.appendChild(mDiv);
-    });
-
-    app.appendChild(yDiv);
-  });
 }
 
 fetch(DATA_URL)
   .then(r => r.ok ? r.json() : [])
-  .then(render)
+  .then(data => {
+    const app = document.getElementById("app");
+    app.innerHTML = "";
+
+    if (!data.length) {
+      app.innerHTML = "<p style='color:var(--text-muted)'>No reports published yet.</p>";
+      return;
+    }
+
+    const grouped = group(data);
+
+    Object.keys(grouped).sort().forEach(year => {
+      const h = document.createElement("h2");
+      h.textContent = year;
+      h.style.margin = "2rem 0 1rem";
+      app.appendChild(h);
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+
+      Object.keys(grouped[year]).forEach(month => {
+        Object.keys(grouped[year][month]).forEach(period => {
+          const obj = grouped[year][month][period];
+          const st = status(obj);
+
+          const card = document.createElement("div");
+          card.className = "card";
+
+          card.innerHTML = `
+            <h3>${month} ${period}</h3>
+            <div class="meta">${year}</div>
+            <div class="status ${st}">${st.toUpperCase()}</div>
+          `;
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          ["network", "grants", "transparency"].forEach(cat => {
+            const btn = document.createElement("button");
+            btn.textContent = cat;
+            btn.disabled = !obj[cat];
+            btn.onclick = () => {
+              const v = document.getElementById("viewer");
+              v.style.display = "block";
+              v.textContent = obj[cat].content;
+              v.scrollIntoView({ behavior: "smooth" });
+            };
+            actions.appendChild(btn);
+          });
+
+          card.appendChild(actions);
+          grid.appendChild(card);
+        });
+      });
+
+      app.appendChild(grid);
+    });
+  })
   .catch(() => {
     document.getElementById("app").innerHTML =
-      "<p>Unable to load reports.json</p>";
+      "<p style='color:#f87171'>Failed to load reports.json</p>";
   });
 </script>
 
