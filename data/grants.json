@@ -1,12 +1,172 @@
 [
   {
-    "period": "2025-09",
+    "period": "2025-02",
     "items": [
       {
-        "proposal": "VOI Digital Infra",
-        "submitter": "@fury",
+        "proposal": "Validator Monitoring Dashboard",
+        "submitter": "@infra-labs",
+        "status": "Funded",
+        "assigned": "Technical Council"
+      },
+      {
+        "proposal": "VOI Education Content Series",
+        "submitter": "@community",
+        "status": "Approved",
+        "assigned": "Community Ops"
+      },
+      {
+        "proposal": "Lightweight Indexer Service",
+        "submitter": "@nodeops",
+        "status": "Council Review",
+        "assigned": "Council"
+      },
+      {
+        "proposal": "Hackathon Sponsorship Proposal",
+        "submitter": "@events",
+        "status": "On Hold",
+        "assigned": "Council"
+      },
+      {
+        "proposal": "Metric",
+        "submitter": "Count"
+      },
+      {
+        "proposal": "------",
+        "submitter": "------"
+      },
+      {
+        "proposal": "Total proposals tracked",
+        "submitter": "4"
+      },
+      {
+        "proposal": "New submissions",
+        "submitter": "4"
+      },
+      {
+        "proposal": "Under review",
+        "submitter": "1"
+      },
+      {
+        "proposal": "Approved",
+        "submitter": "1"
+      },
+      {
+        "proposal": "Funded",
+        "submitter": "1"
+      }
+    ]
+  },
+  {
+    "period": "2025-02",
+    "items": [
+      {
+        "proposal": "Validator Monitoring Dashboard",
+        "submitter": "@infra-labs",
+        "status": "Funded",
+        "assigned": "Technical Council"
+      },
+      {
+        "proposal": "VOI Education Content Series",
+        "submitter": "@community",
+        "status": "Approved",
+        "assigned": "Community Ops"
+      },
+      {
+        "proposal": "Lightweight Indexer Service",
+        "submitter": "@nodeops",
+        "status": "Council Review",
+        "assigned": "Council"
+      },
+      {
+        "proposal": "Hackathon Sponsorship Proposal",
+        "submitter": "@events",
+        "status": "On Hold",
+        "assigned": "Council"
+      },
+      {
+        "proposal": "Metric",
+        "submitter": "Count"
+      },
+      {
+        "proposal": "------",
+        "submitter": "------"
+      },
+      {
+        "proposal": "Total proposals tracked",
+        "submitter": "4"
+      },
+      {
+        "proposal": "New submissions",
+        "submitter": "4"
+      },
+      {
+        "proposal": "Under review",
+        "submitter": "1"
+      },
+      {
+        "proposal": "Approved",
+        "submitter": "1"
+      },
+      {
+        "proposal": "Funded",
+        "submitter": "1"
+      }
+    ]
+  },
+  {
+    "period": "2025-03",
+    "items": [
+      {
+        "proposal": "Decentralized Analytics Tool",
+        "submitter": "@dataworks",
+        "status": "Community Feedback",
+        "assigned": "Technical Council"
+      },
+      {
+        "proposal": "VOI SDK Documentation Upgrade",
+        "submitter": "@sdk-team",
         "status": "Approved",
         "assigned": "Council"
+      },
+      {
+        "proposal": "Regional Ambassador Program",
+        "submitter": "@growth",
+        "status": "Council Review",
+        "assigned": "Community Ops"
+      },
+      {
+        "proposal": "Exchange Liquidity Study",
+        "submitter": "@market",
+        "status": "Community Feedback",
+        "assigned": "Council"
+      },
+      {
+        "proposal": "Metric",
+        "submitter": "Count"
+      },
+      {
+        "proposal": "------",
+        "submitter": "------"
+      },
+      {
+        "proposal": "Total proposals tracked",
+        "submitter": "4"
+      },
+      {
+        "proposal": "New submissions",
+        "submitter": "4"
+      },
+      {
+        "proposal": "Under review",
+        "submitter": "2"
+      },
+      {
+        "proposal": "Approved",
+        "submitter": "1"
+      },
+      {
+        "proposal": "Funded",
+        "submitter": "0"
       }
     ]
   }
