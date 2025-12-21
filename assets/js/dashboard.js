@@ -1,7 +1,6 @@
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
-let REPORTS = [];
+/* =====================================================
+   GLOBAL STATE (DO NOT redeclare REPORTS or loadReports)
+===================================================== */
 let CURRENT_TAB = "network";
 
 const dashboard = document.getElementById("dashboard");
@@ -9,31 +8,29 @@ const yearSel = document.getElementById("year");
 const monthSel = document.getElementById("month");
 const periodSel = document.getElementById("period");
 
-/* =========================================================
-   LOAD DATA
-========================================================= */
-async function loadReports() {
-  const res = await fetch("data/reports.json");
-  REPORTS = await res.json();
-}
-loadReports().then(initFilters);
-
-/* =========================================================
+/* =====================================================
    NAVIGATION
-========================================================= */
+===================================================== */
 document.querySelectorAll(".menu button").forEach(btn => {
-  btn.onclick = () => {
+  btn.addEventListener("click", () => {
     document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     CURRENT_TAB = btn.dataset.tab;
     render();
-  };
+  });
 });
 
-/* =========================================================
-   FILTERS
-========================================================= */
+/* =====================================================
+   INIT
+===================================================== */
+loadReports().then(initFilters);
+
 function initFilters() {
+  if (!REPORTS.length) {
+    dashboard.innerHTML = "<p>No reports available.</p>";
+    return;
+  }
+
   const years = [...new Set(REPORTS.map(r => r.year))];
   yearSel.innerHTML = years.map(y => `<option>${y}</option>`).join("");
   yearSel.onchange = updateMonths;
@@ -60,9 +57,9 @@ function updatePeriods() {
   render();
 }
 
-/* =========================================================
-   RENDER ROUTER
-========================================================= */
+/* =====================================================
+   ROUTER
+===================================================== */
 function render() {
   const item = REPORTS.find(r =>
     r.year === yearSel.value &&
@@ -81,29 +78,23 @@ function render() {
   if (CURRENT_TAB === "transparency") renderTransparency(item.data);
 }
 
-/* =========================================================
+/* =====================================================
    UI HELPERS
-========================================================= */
-const card = (label, value) => `
+===================================================== */
+const card = (l, v) => `
 <div class="card">
-  <div class="label">${label}</div>
-  <div class="value">${value ?? "—"}</div>
+  <div class="label">${l}</div>
+  <div class="value">${v ?? "—"}</div>
 </div>`;
 
-const section = (title, body) => `
+const section = (t, c) => `
 <div class="section">
-  <h2>${title}</h2>
-  ${body}
+  <h2>${t}</h2>${c}
 </div>`;
 
-const tableOrEmpty = (rows, colspan = 5) =>
-  rows.length
-    ? rows.join("")
-    : `<tr><td colspan="${colspan}">No entries</td></tr>`;
-
-/* =========================================================
-   NETWORK REPORT
-========================================================= */
+/* =====================================================
+   NETWORK
+===================================================== */
 function renderNetwork(d) {
   dashboard.innerHTML = `
 ${section("Market Snapshot", `
@@ -115,7 +106,7 @@ ${card("Avg Block Time (s)", d.market_snapshot?.avg_block_time_seconds)}
 
 ${section("Network Nodes", `
 <div class="grid">
-${card("Participating Nodes / Wallets", d.network_nodes?.participating_nodes_wallets)}
+${card("Participating Nodes / Wallets", d.network_nodes?.participating_nodes_or_wallets)}
 ${card("Eligible Online Stake (VOI)", d.network_nodes?.eligible_online_stake_voi)}
 ${card("Weekly Staking Rewards (VOI)", d.network_nodes?.weekly_staking_rewards_voi)}
 </div>
@@ -130,7 +121,7 @@ ${card("Relays Removed", d.relay_health_changes?.relays_removed)}
 ${card("Total Possible Peers", d.relay_health_changes?.total_possible_peers)}
 </div>
 <p><strong>Key Takeaway:</strong> ${d.relay_health_changes?.key_takeaway || "—"}</p>
-<p><strong>Operational Note:</strong> ${d.relay_health_changes?.operational_note || "—"}</p>` )}
+<p>${d.relay_health_changes?.operational_note || ""}</p>` )}
 
 ${section("Transaction Analysis — Overview", `
 <div class="grid">
@@ -138,8 +129,8 @@ ${card("Community Produced Blocks", d.transaction_analysis_overview?.community_p
 ${card("Round Range Start", d.transaction_analysis_overview?.round_range_start)}
 ${card("Round Range End", d.transaction_analysis_overview?.round_range_end)}
 ${card("Number of Blocks", d.transaction_analysis_overview?.number_of_blocks)}
-${card("Start Timestamp (UTC)", d.transaction_analysis_overview?.start_timestamp_utc)}
-${card("End Timestamp (UTC)", d.transaction_analysis_overview?.end_timestamp_utc)}
+${card("Start Timestamp", d.transaction_analysis_overview?.start_timestamp_utc)}
+${card("End Timestamp", d.transaction_analysis_overview?.end_timestamp_utc)}
 </div>` )}
 
 ${section("Profitability — At a Glance", `
@@ -147,35 +138,29 @@ ${section("Profitability — At a Glance", `
 ${card("Self-Hosted Node Cost ($)", d.profitability_at_a_glance?.self_hosted_node_cost_usd)}
 ${card("Stake Required (VOI)", d.profitability_at_a_glance?.stake_required_voi)}
 ${card("Estimated Monthly Profit ($)", d.profitability_at_a_glance?.estimated_monthly_profit_usd)}
-${card("Node-as-a-Service Fee (%)", d.profitability_at_a_glance?.node_as_a_service_fee_percent)}
-${card("Estimated Profit After Fee ($)", d.profitability_at_a_glance?.estimated_monthly_profit_after_fee_usd)}
+${card("Service Fee (%)", d.profitability_at_a_glance?.node_as_a_service_fee_percent)}
+${card("Profit After Fee ($)", d.profitability_at_a_glance?.estimated_monthly_profit_after_fee_usd)}
 </div>
-<p><strong>Key Takeaway:</strong> ${d.profitability_at_a_glance?.key_takeaway || "—"}</p>` )}
+<p>${d.profitability_at_a_glance?.key_takeaway || ""}</p>` )}
 
 ${section("Transaction Breakdown", `
-<div class="grid">
-${card("Payment (pay)", d.transaction_breakdown?.payment_pay)}
-${card("Application Call (appl)", d.transaction_breakdown?.application_call_appl)}
-${card("Asset Transfer (axfer)", d.transaction_breakdown?.asset_transfer_axfer)}
-${card("Asset Config (acfg)", d.transaction_breakdown?.asset_config_acfg)}
-${card("Asset Freeze (afrz)", d.transaction_breakdown?.asset_freeze_afrz)}
-${card("Application Create", d.transaction_breakdown?.application_create)}
-${card("Application Update", d.transaction_breakdown?.application_update)}
-${card("Application Delete", d.transaction_breakdown?.application_delete)}
-${card("Inner Transactions", d.transaction_breakdown?.inner_transactions)}
-</div>` )}
+<table>
+<tr><th>Type</th><th>Count</th></tr>
+${Object.entries(d.transaction_breakdown || {}).map(
+  ([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`
+).join("")}
+</table>` )}
 
 ${section("Relay to Node Ratio", `
 <div class="grid">
-${card("Avg Peers per Relay", d.relay_to_node_ratio?.average_peers_per_relay)}
-${card("Node : Relay Ratio", d.relay_to_node_ratio?.node_relay_ratio)}
+${card("Avg Peers / Relay", d.relay_to_node_ratio?.avg_peers_per_relay)}
+${card("Node : Relay Ratio", d.relay_to_node_ratio?.node_to_relay_ratio)}
 ${card("Reward per Peer (VOI)", d.relay_to_node_ratio?.reward_per_peer_voi)}
 </div>
-<p><strong>Key Takeaway:</strong> ${d.relay_to_node_ratio?.key_takeaway || "—"}</p>` )}
+<p>${d.relay_to_node_ratio?.key_takeaway || ""}</p>` )}
 
-${section("Weekly Observations", `<p>${d.weekly_observations || "—"}</p>` )}
-
-${section("Data Availability & Limitations", `<p>${d.data_availability_limitations || "—"}</p>` )}
+${section("Weekly Observations", `<p>${d.weekly_observations?.observations || "—"}</p>` )}
+${section("Data Availability & Limitations", `<p>${d.data_availability_limitations?.notes || "—"}</p>` )}
 
 ${section("Summary", `
 <div class="grid">
@@ -187,9 +172,9 @@ ${card("Immediate Risks", d.summary?.immediate_risks)}
 `;
 }
 
-/* =========================================================
-   GRANTS REPORT
-========================================================= */
+/* =====================================================
+   GRANTS
+===================================================== */
 function renderGrants(d) {
   const rows = (d.grants_submitted_in_progress || []).map(p => `
 <tr>
@@ -213,16 +198,16 @@ ${card("Funded", d.monthly_snapshot?.funded)}
 ${section("Grants Submitted & In Progress", `
 <table>
 <tr><th>Proposal</th><th>Submitted By</th><th>Date</th><th>Assigned To</th><th>Status</th></tr>
-${tableOrEmpty(rows)}
+${rows.length ? rows.join("") : `<tr><td colspan="5">No entries</td></tr>`}
 </table>` )}
 
 ${section("Highlights & Notes", `<p>${d.highlights_notes || "—"}</p>` )}
 `;
 }
 
-/* =========================================================
-   TRANSPARENCY REPORT
-========================================================= */
+/* =====================================================
+   TRANSPARENCY
+===================================================== */
 function renderTransparency(d) {
   const rows = (d.community_ecosystem_payments || []).map(p => `
 <tr>
@@ -247,7 +232,7 @@ ${section("Token Distribution Breakdown", `
 ${card("Community Allocation", d.token_distribution_breakdown?.community_allocation_voi)}
 ${card("Market Liquidity", d.token_distribution_breakdown?.market_liquidity_voi)}
 ${card("Ecosystem Incentives", d.token_distribution_breakdown?.ecosystem_incentives_voi)}
-${card("Block Authority Allocation", d.token_distribution_breakdown?.block_authority_allocation_voi)}
+${card("Block Authority", d.token_distribution_breakdown?.block_authority_allocation_voi)}
 ${card("Other / Reserves", d.token_distribution_breakdown?.other_reserves_voi)}
 </div>` )}
 
@@ -262,8 +247,8 @@ ${card("TDV ($)", d.market_availability?.tdv_usd)}
 
 ${section("Community & Ecosystem Payments", `
 <table>
-<tr><th>Date</th><th>Recipient</th><th>Amount (VOI)</th><th>Purpose</th><th>Source Wallet</th></tr>
-${tableOrEmpty(rows)}
+<tr><th>Date</th><th>Recipient</th><th>Amount</th><th>Purpose</th><th>Source</th></tr>
+${rows.length ? rows.join("") : `<tr><td colspan="5">No entries</td></tr>`}
 </table>` )}
 
 ${section("Limitations & Disclaimers", `<p>${d.limitations_disclaimers || "—"}</p>` )}
