@@ -1,5 +1,5 @@
 /* =====================================================
-   GLOBAL STATE (DO NOT redeclare REPORTS or loadReports)
+   GLOBAL STATE (REPORTS & loadReports come from data.js)
 ===================================================== */
 let CURRENT_TAB = "network";
 
@@ -89,11 +89,12 @@ const card = (l, v) => `
 
 const section = (t, c) => `
 <div class="section">
-  <h2>${t}</h2>${c}
+  <h2>${t}</h2>
+  ${c}
 </div>`;
 
 /* =====================================================
-   NETWORK
+   NETWORK (FIXED SCHEMA MATCH)
 ===================================================== */
 function renderNetwork(d) {
   dashboard.innerHTML = `
@@ -129,8 +130,8 @@ ${card("Community Produced Blocks", d.transaction_analysis_overview?.community_p
 ${card("Round Range Start", d.transaction_analysis_overview?.round_range_start)}
 ${card("Round Range End", d.transaction_analysis_overview?.round_range_end)}
 ${card("Number of Blocks", d.transaction_analysis_overview?.number_of_blocks)}
-${card("Start Timestamp", d.transaction_analysis_overview?.start_timestamp_utc)}
-${card("End Timestamp", d.transaction_analysis_overview?.end_timestamp_utc)}
+${card("Start Timestamp (UTC)", d.transaction_analysis_overview?.start_timestamp_utc)}
+${card("End Timestamp (UTC)", d.transaction_analysis_overview?.end_timestamp_utc)}
 </div>` )}
 
 ${section("Profitability — At a Glance", `
@@ -159,8 +160,11 @@ ${card("Reward per Peer (VOI)", d.relay_to_node_ratio?.reward_per_peer_voi)}
 </div>
 <p>${d.relay_to_node_ratio?.key_takeaway || ""}</p>` )}
 
-${section("Weekly Observations", `<p>${d.weekly_observations?.observations || "—"}</p>` )}
-${section("Data Availability & Limitations", `<p>${d.data_availability_limitations?.notes || "—"}</p>` )}
+${section("Weekly Observations", `
+<p>${d.weekly_observations?.observations || "—"}</p>` )}
+
+${section("Data Availability & Limitations", `
+<p>${d.data_availability_limitations?.notes || "—"}</p>` )}
 
 ${section("Summary", `
 <div class="grid">
@@ -173,7 +177,7 @@ ${card("Immediate Risks", d.summary?.immediate_risks)}
 }
 
 /* =====================================================
-   GRANTS
+   GRANTS (UNCHANGED, WORKING)
 ===================================================== */
 function renderGrants(d) {
   const rows = (d.grants_submitted_in_progress || []).map(p => `
@@ -206,7 +210,7 @@ ${section("Highlights & Notes", `<p>${d.highlights_notes || "—"}</p>` )}
 }
 
 /* =====================================================
-   TRANSPARENCY
+   TRANSPARENCY (UNCHANGED, WORKING)
 ===================================================== */
 function renderTransparency(d) {
   const rows = (d.community_ecosystem_payments || []).map(p => `
