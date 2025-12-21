@@ -72,5 +72,82 @@
       }
     },
     "generated_at": "2025-12-21T12:49:40.018906Z"
+  },
+  {
+    "year": "2025",
+    "month": "December",
+    "period": "01-10",
+    "category": "grants",
+    "data": {
+      "monthly_snapshot": {
+        "total_proposals_tracked": "18",
+        "new_submissions": "5",
+        "under_review": "6",
+        "approved": "3",
+        "funded": "2"
+      },
+      "grants_submitted_in_progress": [
+        {
+          "proposal_name": "Proposal Alpha Wallet SDK",
+          "submitted_by": "Alice Dev",
+          "date_submitted": "2025-12-02",
+          "assigned_to": "Grants Council",
+          "proposal_status": "Under Review"
+        },
+        {
+          "proposal_name": "Proposal Relay Optimizer",
+          "submitted_by": "Bob Infra",
+          "date_submitted": "2025-12-03",
+          "assigned_to": "Technical Committee",
+          "proposal_status": "Approved"
+        },
+        {
+          "proposal_name": "Proposal Analytics Dashboard",
+          "submitted_by": "Carol Data",
+          "date_submitted": "2025-12-05",
+          "assigned_to": "Grants Council",
+          "proposal_status": "Community Feedback"
+        }
+      ],
+      "highlights_notes": "Grant activity increased moderately during this period, with a notable focus on developer tooling and infrastructure performance.\nCommunity feedback cycles remain healthy, though review timelines may need further optimization as submission volume increases."
+    },
+    "generated_at": "2025-12-21T13:04:08.064864Z"
+  },
+  {
+    "year": "2025",
+    "month": "December",
+    "period": "01-10",
+    "category": "transparency",
+    "data": {
+      "token_supply_summary": {
+        "total_supply_voi": "1000000000",
+        "circulating_supply_voi": "425000000",
+        "unlocked_tokens_voi": "510000000",
+        "locked_tokens_voi": "490000000"
+      },
+      "token_distribution_breakdown": {
+        "community_allocation_voi": "300000000",
+        "market_liquidity_voi": "85000000",
+        "ecosystem_incentives_voi": "220000000",
+        "block_authority_allocation_voi": "180000000",
+        "other_reserves_voi": "215000000"
+      },
+      "market_availability": {
+        "tokens_on_cex_voi": "62000000",
+        "tokens_on_dex_voi": "23000000",
+        "total_liquidity_voi": "85000000",
+        "fdv_usd": "18400000",
+        "tdv_usd": "7820000"
+      },
+      "community_ecosystem_payments": [],
+      "limitations_disclaimers": "Liquidity figures are aggregated from major centralized and decentralized exchanges and may not reflect short-term intraday fluctuations.\nSome ecosystem payments are batched and reported at period boundaries.",
+      "summary": {
+        "supply_transparency": "High",
+        "authority_spend_activity": "Within expected operational parameters",
+        "community_funding_health": "Stable",
+        "risks_or_concerns": "No material risks identified during this reporting period"
+      }
+    },
+    "generated_at": "2025-12-21T13:04:08.065865Z"
   }
 ]
