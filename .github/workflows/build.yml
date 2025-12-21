@@ -2,37 +2,37 @@ name: Build VOI Reports
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Validate report structure
-      run: python scripts/validate_structure.py
+      - name: Validate structure
+        run: python scripts/validate_structure.py
 
-    - name: Build reports.json
-      run: python scripts/build_reports.py
+      - name: Build reports JSON
+        run: python scripts/build_reports.py
 
-    - name: Commit reports.json if changed
-      run: |
-        git config user.name "voi-bot"
-        git config user.email "voi-bot@users.noreply.github.com"
+      - name: Commit generated data
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data/reports.json
+          git commit -m "auto: build reports.json" || echo "No changes to commit"
 
-        git add data/reports.json
-
-        if git diff --cached --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "Auto-update reports.json"
-          git push
-        fi
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
