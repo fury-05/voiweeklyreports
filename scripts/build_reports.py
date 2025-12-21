@@ -1,120 +1,153 @@
 import os
 import json
-import hashlib
+import re
 from datetime import datetime
 
-BASE_REPORTS_DIR = "reports"
-OUTPUT_DIR = "data"
-OUTPUT_FILE = os.path.join(OUTPUT_DIR, "reports.json")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPORTS_DIR = os.path.join(BASE_DIR, "reports")
+DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_FILE = os.path.join(DATA_DIR, "reports.json")
 
-REQUIRED_FILES = {
-    "network.md",
-    "grants.md",
-    "transparency.md",
-}
-
-TEMPLATE_KEYWORDS = ["template", "_template", ".template."]
-
-
-def is_template(filename: str) -> bool:
-    fname = filename.lower()
-    return any(k in fname for k in TEMPLATE_KEYWORDS)
-
-
-def is_real_md(filename: str) -> bool:
-    return filename.endswith(".md") and not is_template(filename)
-
-
-def read_file(path: str) -> str:
+def read_md(path):
+    if not os.path.exists(path):
+        return ""
     with open(path, "r", encoding="utf-8") as f:
-        return f.read().strip()
+        return f.read()
 
+def parse_kv(text):
+    """
+    Parses:
+    Key: Value
+    """
+    data = {}
+    for line in text.splitlines():
+        if ":" in line:
+            k, v = line.split(":", 1)
+            data[k.strip().lower().replace(" ", "_")] = v.strip()
+    return data
 
-def file_hash(content: str) -> str:
-    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+def extract_section(text, title):
+    pattern = rf"## {re.escape(title)}(.*?)(?=\n## |\Z)"
+    m = re.search(pattern, text, re.S)
+    return m.group(1).strip() if m else ""
 
+def build_network(md):
+    return {
+        "market_snapshot": parse_kv(extract_section(md, "Market Snapshot")),
+        "network_nodes": parse_kv(extract_section(md, "Network Nodes")),
+        "relay_health_changes": parse_kv(extract_section(md, "Relay Health & Changes")),
+        "transaction_analysis_overview": parse_kv(extract_section(md, "Transaction Analysis — Overview")),
+        "profitability_at_a_glance": parse_kv(extract_section(md, "Profitability — At a Glance")),
+        "transaction_breakdown": parse_kv(extract_section(md, "Transaction Breakdown")),
+        "relay_to_node_ratio": parse_kv(extract_section(md, "Relay to Node Ratio")),
+        "weekly_observations": {
+            "observations": extract_section(md, "Weekly Observations")
+        },
+        "data_availability_limitations": {
+            "notes": extract_section(md, "Data Availability & Limitations")
+        },
+        "summary": parse_kv(extract_section(md, "Summary"))
+    }
 
-def load_existing_data():
+def build_grants(md):
+    snapshot = parse_kv(extract_section(md, "Monthly Snapshot"))
+
+    rows = []
+    table = extract_section(md, "Grants Submitted & In Progress")
+    for line in table.splitlines():
+        if "|" in line:
+            parts = [p.strip() for p in line.split("|") if p.strip()]
+            if len(parts) == 5:
+                rows.append({
+                    "proposal_name": parts[0],
+                    "submitted_by": parts[1],
+                    "date_submitted": parts[2],
+                    "assigned_to": parts[3],
+                    "proposal_status": parts[4]
+                })
+
+    return {
+        "monthly_snapshot": snapshot,
+        "grants_submitted_in_progress": rows,
+        "highlights_notes": extract_section(md, "Highlights & Notes")
+    }
+
+def build_transparency(md):
+    return {
+        "token_supply_summary": parse_kv(extract_section(md, "Token Supply Summary")),
+        "token_distribution_breakdown": parse_kv(extract_section(md, "Token Distribution Breakdown")),
+        "market_availability": parse_kv(extract_section(md, "Market Availability")),
+        "community_ecosystem_payments": [],
+        "limitations_disclaimers": extract_section(md, "Limitations & Disclaimers"),
+        "summary": parse_kv(extract_section(md, "Summary"))
+    }
+
+def load_existing():
     if not os.path.exists(OUTPUT_FILE):
         return []
     with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
-def save_data(data):
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+def save(data):
+    os.makedirs(DATA_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        json.dump(data, f, indent=2)
 
+def main():
+    existing = load_existing()
+    results = []
 
-def build():
-    existing_data = load_existing_data()
-    index = {item["source_path"]: item for item in existing_data}
+    if not os.path.exists(REPORTS_DIR):
+        save(existing)
+        return
 
-    new_entries = 0
-    updated_entries = 0
-
-    for year in sorted(os.listdir(BASE_REPORTS_DIR)):
-        year_path = os.path.join(BASE_REPORTS_DIR, year)
-        if not os.path.isdir(year_path):
+    for root, dirs, files in os.walk(REPORTS_DIR):
+        if not files:
             continue
 
-        for month in sorted(os.listdir(year_path)):
-            month_path = os.path.join(year_path, month)
-            if not os.path.isdir(month_path):
+        parts = root.replace(REPORTS_DIR, "").strip(os.sep).split(os.sep)
+        if len(parts) < 3:
+            continue
+
+        year, month, period = parts[0], parts[1], parts[2]
+
+        for category in ["network", "grants", "transparency"]:
+            md_path = os.path.join(root, f"{category}.md")
+            md = read_md(md_path)
+            if not md:
                 continue
 
-            for period in sorted(os.listdir(month_path)):
-                period_path = os.path.join(month_path, period)
-                if not os.path.isdir(period_path):
-                    continue
+            if category == "network":
+                data = build_network(md)
+            elif category == "grants":
+                data = build_grants(md)
+            else:
+                data = build_transparency(md)
 
-                files = os.listdir(period_path)
-                real_files = {
-                    f for f in files if is_real_md(f)
-                }
+            record = {
+                "year": year,
+                "month": month,
+                "period": period,
+                "category": category,
+                "data": data,
+                "generated_at": datetime.utcnow().isoformat() + "Z"
+            }
 
-                # Only process complete report sets
-                if real_files != REQUIRED_FILES:
-                    continue
+            results.append(record)
 
-                for filename in sorted(real_files):
-                    file_path = os.path.join(period_path, filename)
-                    content = read_file(file_path)
-                    content_hash = file_hash(content)
+    # append-only merge
+    final = existing[:]
+    for r in results:
+        if not any(
+            x["year"] == r["year"] and
+            x["month"] == r["month"] and
+            x["period"] == r["period"] and
+            x["category"] == r["category"]
+            for x in existing
+        ):
+            final.append(r)
 
-                    source_path = file_path.replace("\\", "/")
-
-                    entry = {
-                        "year": int(year),
-                        "month": month,
-                        "period": period,
-                        "category": filename.replace(".md", ""),
-                        "content": content,
-                        "source_path": source_path,
-                        "content_hash": content_hash,
-                        "last_processed": datetime.utcnow().isoformat() + "Z",
-                    }
-
-                    if source_path in index:
-                        if index[source_path]["content_hash"] != content_hash:
-                            index[source_path].update(entry)
-                            updated_entries += 1
-                    else:
-                        index[source_path] = entry
-                        new_entries += 1
-
-    final_data = list(index.values())
-    final_data.sort(
-        key=lambda x: (x["year"], x["month"], x["period"], x["category"])
-    )
-
-    save_data(final_data)
-
-    print(
-        f"Build complete | New: {new_entries} | Updated: {updated_entries} | Total: {len(final_data)}"
-    )
-
+    save(final)
 
 if __name__ == "__main__":
-    build()
+    main()

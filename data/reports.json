@@ -1,0 +1,76 @@
+[
+  {
+    "year": "2025",
+    "month": "December",
+    "period": "01-10",
+    "category": "network",
+    "data": {
+      "market_snapshot": {
+        "voi_price_usd": "0.0184",
+        "market_cap_usd": "12400000",
+        "avg_block_time_seconds": "3.2"
+      },
+      "network_nodes": {
+        "participating_nodes_or_wallets": "412",
+        "eligible_online_stake_voi": "186500000",
+        "weekly_staking_rewards_voi": "325000",
+        "insight": "Node participation remained stable with a slight increase in online stake compared to the previous reporting period."
+      },
+      "relay_health_changes": {
+        "total_relays": "128",
+        "qualified_relays": "114",
+        "relays_added": "6",
+        "relays_removed": "2",
+        "total_possible_peers": "912",
+        "key_takeaway": "Relay capacity expanded without compromising network stability.",
+        "operational_note": "Minor relay churn observed due to routine maintenance upgrades."
+      },
+      "transaction_analysis_overview": {
+        "community_produced_blocks": "98214",
+        "round_range_start": "415200",
+        "round_range_end": "417850",
+        "number_of_blocks": "2650",
+        "start_timestamp_utc": "2025-01-01T00:00:00Z",
+        "end_timestamp_utc": "2025-01-10T23:59:59Z"
+      },
+      "profitability_at_a_glance": {
+        "self_hosted_node_cost_usd": "42",
+        "stake_required_voi": "1000000",
+        "estimated_monthly_profit_usd": "96",
+        "node_as_a_service_fee_percent": "10",
+        "estimated_monthly_profit_after_fee_usd": "86",
+        "key_takeaway": "Self-hosted nodes continue to outperform managed services for operators with sufficient technical capacity."
+      },
+      "transaction_breakdown": {
+        "payment_pay": "182450",
+        "application_call_appl": "86520",
+        "asset_transfer_axfer": "124300",
+        "asset_config_acfg": "1240",
+        "asset_freeze_afrz": "84",
+        "application_create": "128",
+        "application_update": "96",
+        "application_delete": "14",
+        "inner_transactions": "415000"
+      },
+      "relay_to_node_ratio": {
+        "avg_peers_per_relay": "7.1",
+        "node_to_relay_ratio": "3.2",
+        "reward_per_peer_voi": "2850",
+        "key_takeaway": "Relay peer distribution remains well balanced across the network."
+      },
+      "weekly_observations": {
+        "observations": "Node uptime remained consistently above 99.7% across all monitored relays.\nNo critical consensus failures were observed during the reporting window.\nTransaction throughput showed moderate growth driven primarily by application calls."
+      },
+      "data_availability_limitations": {
+        "notes": "Some relay performance metrics are sampled at fixed intervals and may not capture transient network fluctuations."
+      },
+      "summary": {
+        "network_stability": "High",
+        "participation_trend": "Gradual increase",
+        "transaction_activity": "Moderate growth",
+        "immediate_risks": "No immediate systemic risks identified"
+      }
+    },
+    "generated_at": "2025-12-21T12:49:40.018906Z"
+  }
+]

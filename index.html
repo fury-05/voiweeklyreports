@@ -1,287 +1,47 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>VOI Transparency Reports</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-:root {
-  --bg-main: radial-gradient(circle at top, #3b1d6b, #0b0f14 55%);
-  --card-bg: rgba(17, 24, 39, 0.88);
-  --border-soft: rgba(255,255,255,0.08);
-  --accent: #8b5cf6;
-  --accent-soft: rgba(139,92,246,0.15);
-  --text-main: #e5e7eb;
-  --text-muted: #9ca3af;
-  --green: #22c55e;
-  --yellow: #eab308;
-  --grey: #6b7280;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Inter, system-ui, sans-serif;
-  background: var(--bg-main);
-  color: var(--text-main);
-}
-
-/* NAVBAR */
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background: rgba(2,6,23,0.6);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-soft);
-}
-
-nav h1 {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-nav a {
-  color: var(--text-muted);
-  text-decoration: none;
-  margin-left: 1.5rem;
-  font-size: 0.9rem;
-}
-
-nav a:hover {
-  color: var(--text-main);
-}
-
-/* HERO */
-header {
-  text-align: center;
-  padding: 4rem 1rem 3rem;
-}
-
-header h2 {
-  font-size: 2.4rem;
-  margin-bottom: 0.5rem;
-}
-
-header p {
-  color: var(--text-muted);
-  max-width: 640px;
-  margin: 0 auto;
-}
-
-/* MAIN */
-main {
-  max-width: 1200px;
-  margin: auto;
-  padding: 2rem;
-}
-
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-/* CARD */
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-soft);
-  border-radius: 16px;
-  padding: 1.25rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-}
-
-.card h3 {
-  margin: 0 0 0.25rem;
-  font-size: 1rem;
-}
-
-.card .meta {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-/* STATUS */
-.status {
-  margin-top: 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.complete { color: var(--green); }
-.partial  { color: var(--yellow); }
-.empty    { color: var(--grey); }
-
-/* BUTTONS */
-.actions {
-  margin-top: 1rem;
-}
-
-.actions button {
-  background: var(--accent-soft);
-  border: 1px solid var(--border-soft);
-  color: var(--text-main);
-  padding: 0.35rem 0.6rem;
-  border-radius: 8px;
-  margin-right: 0.4rem;
-  cursor: pointer;
-  font-size: 0.75rem;
-}
-
-.actions button:hover {
-  background: var(--accent);
-}
-
-.actions button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* VIEWER */
-#viewer {
-  margin-top: 3rem;
-  background: #020617;
-  border: 1px solid var(--border-soft);
-  border-radius: 16px;
-  padding: 1.5rem;
-  white-space: pre-wrap;
-  display: none;
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 2rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-</style>
+<meta charset="utf-8">
+<title>VOI Reports Dashboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/css/theme.css">
 </head>
 
 <body>
 
 <nav>
-  <h1>VOI Reports</h1>
-  <div>
-    <a href="#">Home</a>
-    <a href="#">Transparency</a>
-    <a href="#">Network</a>
-    <a href="#">Grants</a>
+  <div class="logo">VOI Reports</div>
+  <div class="menu">
+    <button data-tab="network" class="active">Network</button>
+    <button data-tab="grants">Grants</button>
+    <button data-tab="transparency">Transparency</button>
     <a href="https://github.com/fury-05/voiweeklyreports" target="_blank">GitHub</a>
   </div>
 </nav>
 
-<header>
-  <h2>Transparency & Activity Reports</h2>
+<header class="hero">
+  <h1>Transparency & Activity Reports</h1>
   <p>
     Public, auditable reports published in fixed reporting cycles to ensure
     accountability across the VOI network.
   </p>
+
+  <div class="filters">
+    <select id="year"></select>
+    <select id="month"></select>
+    <select id="period"></select>
+  </div>
 </header>
 
-<main>
-  <div id="app">Loading reports…</div>
-  <pre id="viewer"></pre>
+<main id="dashboard">
+  Loading reports…
 </main>
 
 <footer>
-  © VOI Network • Reports are generated automatically and are append-only.
+  © VOI Network — Automated & Append-Only
 </footer>
 
-<script>
-const DATA_URL = "data/reports.json";
-
-function group(data) {
-  const out = {};
-  data.forEach(r => {
-    out[r.year] ??= {};
-    out[r.year][r.month] ??= {};
-    out[r.year][r.month][r.period] ??= {};
-    out[r.year][r.month][r.period][r.category] = r;
-  });
-  return out;
-}
-
-function status(obj) {
-  const n = Object.keys(obj).length;
-  if (n === 0) return "empty";
-  if (n < 3) return "partial";
-  return "complete";
-}
-
-fetch(DATA_URL)
-  .then(r => r.ok ? r.json() : [])
-  .then(data => {
-    const app = document.getElementById("app");
-    app.innerHTML = "";
-
-    if (!data.length) {
-      app.innerHTML = "<p style='color:var(--text-muted)'>No reports published yet.</p>";
-      return;
-    }
-
-    const grouped = group(data);
-
-    Object.keys(grouped).sort().forEach(year => {
-      const h = document.createElement("h2");
-      h.textContent = year;
-      h.style.margin = "2rem 0 1rem";
-      app.appendChild(h);
-
-      const grid = document.createElement("div");
-      grid.className = "grid";
-
-      Object.keys(grouped[year]).forEach(month => {
-        Object.keys(grouped[year][month]).forEach(period => {
-          const obj = grouped[year][month][period];
-          const st = status(obj);
-
-          const card = document.createElement("div");
-          card.className = "card";
-
-          card.innerHTML = `
-            <h3>${month} ${period}</h3>
-            <div class="meta">${year}</div>
-            <div class="status ${st}">${st.toUpperCase()}</div>
-          `;
-
-          const actions = document.createElement("div");
-          actions.className = "actions";
-
-          ["network", "grants", "transparency"].forEach(cat => {
-            const btn = document.createElement("button");
-            btn.textContent = cat;
-            btn.disabled = !obj[cat];
-            btn.onclick = () => {
-              const v = document.getElementById("viewer");
-              v.style.display = "block";
-              v.textContent = obj[cat].content;
-              v.scrollIntoView({ behavior: "smooth" });
-            };
-            actions.appendChild(btn);
-          });
-
-          card.appendChild(actions);
-          grid.appendChild(card);
-        });
-      });
-
-      app.appendChild(grid);
-    });
-  })
-  .catch(() => {
-    document.getElementById("app").innerHTML =
-      "<p style='color:#f87171'>Failed to load reports.json</p>";
-  });
-</script>
-
+<script src="assets/js/data.js"></script>
+<script src="assets/js/dashboard.js"></script>
 </body>
 </html>
