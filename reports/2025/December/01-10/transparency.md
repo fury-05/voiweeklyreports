@@ -36,4 +36,4 @@ Some ecosystem payments are batched and reported at period boundaries.
 Supply Transparency: High
 Authority Spend Activity: Within expected operational parameters
 Community Funding Health: Stable
-Risks or Concerns: No material risks identified during this reporting period
+Risks or Concerns: No material risks identified during this reporting periodh
